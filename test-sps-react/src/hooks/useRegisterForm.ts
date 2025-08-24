@@ -3,12 +3,16 @@ import { SignUpSchema } from "../types/forms.ts"
 import { yupResolver } from "@hookform/resolvers/yup"
 import { useForm } from "react-hook-form"
 import { useSignUpSchema } from "../lib/validations/schemas/signUp.schema.ts"
-import { JwtManager } from "../utils/jwtManager.ts"
 import userService from "../services/UserService.ts"
+import { useAuth } from "../contexts/AuthContext.tsx"
+import { useNavigate } from "react-router-dom"
 
 export const useRegisterForm = () => {
   const schema = useSignUpSchema;
-  const jwt = new JwtManager();
+  const { login } = useAuth();
+  const navigate = useNavigate();
+
+
   const form = useForm({
     resolver: yupResolver(schema),
     mode: "onChange",
@@ -35,9 +39,12 @@ export const useRegisterForm = () => {
       }
       console.log(response);
 
-      jwt.setToken(response.token);
+      login(response.token, response.user);
+
 
       form.reset()
+
+      navigate("/users", { replace: true });
 
     } catch (error) {
       try {

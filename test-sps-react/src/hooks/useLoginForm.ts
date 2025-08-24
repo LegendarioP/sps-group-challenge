@@ -4,11 +4,14 @@ import { yupResolver } from "@hookform/resolvers/yup"
 import { useForm } from "react-hook-form"
 import { useSignInSchema } from "../lib/validations/schemas/signIn.schema.ts"
 import authService from "../services/AuthService.ts"
-import { JwtManager } from "../utils/jwtManager.ts"
+import { useAuth } from "../contexts/AuthContext.tsx"
+import { useNavigate } from "react-router-dom"
 
 export const useLoginForm = () => {
     const schema = useSignInSchema;
-    const jwt = new JwtManager();
+    const { login } = useAuth();
+    const navigate = useNavigate();
+
     const form = useForm({
         resolver: yupResolver(schema),
         mode: "onChange",
@@ -31,9 +34,11 @@ export const useLoginForm = () => {
                 throw new Error("No response from server");
             }
 
-            jwt.setToken(response.token);
+            login(response.token, response.user);
 
-            form.reset()
+            form.reset();
+
+            navigate("/users", { replace: true });
 
         } catch (error) {
             try {
@@ -41,7 +46,7 @@ export const useLoginForm = () => {
             } catch (apiError) {
                 if (apiError instanceof ConflictError) {
                     form.setError('email', {
-                        message: "Email já existe" // substituir pelo t() quando implementar i18n
+                        message: "Email já existe"
                     })
                 } else if (apiError instanceof BadRequestError) {
                     form.setError('root', {
