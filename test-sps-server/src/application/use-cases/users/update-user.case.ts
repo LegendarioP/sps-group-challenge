@@ -1,3 +1,4 @@
+import { NotFoundError } from '../../../../../test-sps-react/src/lib/api-errors';
 import { IUserRepository } from '../../../domain/repositories/user.repository';
 import { IHashService } from '../../../domain/services/hash.service';
 import { UpdateUser } from '../../../presentation/dtos/user.dto';
@@ -12,7 +13,7 @@ export class UpdateUserUseCase {
     const user = await this.userRepository.findById(data.id);
 
     if (!user) {
-      throw new Error('User not found');
+      throw new NotFoundError();
     }
 
     const updateData: Partial<Omit<typeof user, 'id'>> = {};

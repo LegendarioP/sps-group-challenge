@@ -3,6 +3,7 @@ import { CreateUserUseCase, ListUsersUseCase, UpdateUserUseCase, DeleteUsersUseC
 import { userRepository } from '../../infrastructure/db/in-memory-user.repository';
 import { hashService } from '../../infrastructure/security/hash.service';
 import { jwtService } from '../../infrastructure/security/jwt.service';
+import { UserAlreadyExistsError, UserNotFoundError } from '../../shared/user.error';
 
 const createUser = new CreateUserUseCase(userRepository, hashService, jwtService);
 const listUsers = new ListUsersUseCase(userRepository);
@@ -11,12 +12,18 @@ const deleteUser = new DeleteUsersUseCase(userRepository)
 
 
 export const UserController = {
-  async create(req: Request, res: Response): Promise<void> {
+  async create(req: Request, res: Response) {
     try {
       const result = await createUser.execute(req.body);
       res.status(201).json(result);
-    } catch (error: any) {
-      res.status(400).json({ error: error.message });
+    } catch (error) {
+      if (error instanceof UserAlreadyExistsError) {
+        return res.status(409).send({ error: error.message })
+      }
+      if (error instanceof Error) {
+        return res.status(400).send({ error: error.message })
+      }
+      return res.status(400).send({ error: 'Unknown error' })
     }
   },
 
@@ -30,27 +37,36 @@ export const UserController = {
   },
 
 
-  async update(req: Request, res: Response): Promise<void> {
+  async update(req: Request, res: Response) {
     try {
       const userId = req.params.id;
       const updateData = { id: userId, ...req.body };
-      
+
       await updateUser.execute(updateData);
-    
-      res.status(200).json({ 
+
+      res.status(200).json({
         message: 'Usuário atualizado com sucesso'
       });
-    } catch (error: any) {
-      res.status(400).json({ error: error.message });
+    } catch (error) {
+      if (error instanceof Error) {
+        return res.status(400).send({ error: error.message })
+      }
+      return res.status(400).send({ error: 'Unknown error' })
     }
   },
 
-  async delete(req: Request, res: Response): Promise<void> {
+  async delete(req: Request, res: Response) {
     try {
       await deleteUser.execute(req.params.id);
       res.json({ message: 'Usuário removido com sucesso' });
     } catch (error: any) {
-      res.status(404).json({ error: error.message });
+      if (error instanceof UserNotFoundError) {
+        return res.status(404).send({ error: error.message });
+      }
+      if (error instanceof Error) {
+        return res.status(400).send({ error: error.message });
+      }
+      return res.status(400).send({ error: 'Unknown error' });
     }
   }
 };

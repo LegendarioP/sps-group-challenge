@@ -1,3 +1,4 @@
+import { NotFoundError } from '../../../../../test-sps-react/src/lib/api-errors';
 import { UserRole } from '../../../domain/entities/user.entity';
 import { IUserRepository } from '../../../domain/repositories/user.repository';
 
@@ -9,7 +10,7 @@ export class DeleteUsersUseCase {
     const user = await this.userRepository.findById(id)
 
     if (!user) {
-      throw new Error('No users found');
+      throw new NotFoundError();
     }
 
     if(user.type === UserRole.ADMIN) {

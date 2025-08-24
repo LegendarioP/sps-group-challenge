@@ -3,6 +3,7 @@ import { IHashService } from '../../../domain/services/hash.service';
 import { UserRole } from '../../../domain/entities/user.entity';
 import { CreateUser } from '../../../presentation/dtos/user.dto';
 import { IJwtService } from '../../../domain/services/jwt.service';
+import { UserAlreadyExistsError } from '../../../shared/user.error';
 
 
 export class CreateUserUseCase {
@@ -19,7 +20,7 @@ export class CreateUserUseCase {
 
     const existingUser = await this.userRepository.findByEmail(input.email);
     if (existingUser) {
-      throw new Error('User already exists');
+      throw new UserAlreadyExistsError();
     }
 
     const hashedPassword = await this.hashService.hash(input.password);
