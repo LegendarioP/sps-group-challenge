@@ -44,11 +44,7 @@ export const useLoginForm = () => {
             try {
                 handleApiError(error)
             } catch (apiError) {
-                if (apiError instanceof ConflictError) {
-                    form.setError('email', {
-                        message: "Email já existe"
-                    })
-                } else if (apiError instanceof BadRequestError) {
+                if (apiError instanceof BadRequestError) {
                     form.setError('root', {
                         message: "Dados inválidos"
                     })

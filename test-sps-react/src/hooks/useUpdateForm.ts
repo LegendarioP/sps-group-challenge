@@ -1,4 +1,4 @@
-import { BadRequestError, ConflictError, handleApiError, NetworkError } from "../lib/api-errors.ts"
+import { BadRequestError, handleApiError, NetworkError } from "../lib/api-errors.ts"
 import { UpdateUserSchema } from "../types/forms.ts"
 import { yupResolver } from "@hookform/resolvers/yup"
 import { useForm } from "react-hook-form"
@@ -48,11 +48,7 @@ export const useUpdateForm = (id: string) => {
       try {
         handleApiError(error)
       } catch (apiError) {
-        if (apiError instanceof ConflictError) {
-          form.setError('email', {
-            message: "Email já existe"
-          })
-        } else if (apiError instanceof BadRequestError) {
+        if (apiError instanceof BadRequestError) {
           form.setError('root', {
             message: "Dados inválidos"
           })

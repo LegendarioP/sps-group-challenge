@@ -52,7 +52,7 @@ export const useRegisterForm = () => {
       } catch (apiError) {
         if (apiError instanceof ConflictError) {
           form.setError('email', {
-            message: "Email já existe"
+            message: "Email já cadastrado"
           })
         } else if (apiError instanceof BadRequestError) {
           form.setError('root', {
