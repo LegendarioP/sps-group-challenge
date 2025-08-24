@@ -1,4 +1,5 @@
-import { NotFoundError } from '../../../../../test-sps-react/src/lib/api-errors';
+import { NotFoundError } from '../../../shared/user.error';
+
 import { UserRole } from '../../../domain/entities/user.entity';
 import { IUserRepository } from '../../../domain/repositories/user.repository';
 

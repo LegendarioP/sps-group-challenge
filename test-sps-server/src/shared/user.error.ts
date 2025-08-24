@@ -5,14 +5,14 @@ export class UserAlreadyExistsError extends Error {
   }
 }
 
-export class UserNotFoundError extends Error {
-  constructor(message = "Usuário não encontrado") {
+export class NotFoundError extends Error {
+  constructor(message = "User Not Found") {
     super(message);
-    this.name = "UserNotFound";
+    this.name = "NotFoundError";
   }
 }
 export class UserDeleteError extends Error {
-  constructor(message = "Erro ao remover usuário") {
+  constructor(message = "Error deleting user") {
     super(message);
     this.name = "UserDeleteError";
   }

@@ -1,4 +1,5 @@
-import { NotFoundError } from '../../../../../test-sps-react/src/lib/api-errors';
+import { NotFoundError } from '../../../shared/user.error';
+
 import { IUserRepository } from '../../../domain/repositories/user.repository';
 import { IHashService } from '../../../domain/services/hash.service';
 import { UpdateUser } from '../../../presentation/dtos/user.dto';
