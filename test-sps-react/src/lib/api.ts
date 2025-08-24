@@ -1,9 +1,11 @@
 import axios from "axios";
 import { ApiError, handleApiError } from "./api-errors.ts";
+import { JwtManager } from "../utils/jwtManager.ts";
 
 
 export const backendURL = process.env.BACKEND_URL ?? "http://localhost:3001/";
 const timeoutApiRequest = 10000;
+const jwtManager = new JwtManager();
 
 
 export const apiPublic = axios.create({
@@ -22,15 +24,13 @@ apiPrivate.interceptors.request.use(
       return config;
     }
 
-    const tokenResponse = await axios.get("/api/token", {
-      withCredentials: true,
-    });
-    if (tokenResponse.status !== 200) {
-      throw new ApiError("Failed to get access token");
+    const token = jwtManager.getTokenFromCookies();
+    
+    if (!token) {
+      throw new ApiError("No authentication token found");
     }
 
-    const { token } = tokenResponse.data;
-    config.headers.Authorization = `Bearer ${token.accessToken}`;
+    config.headers.Authorization = `Bearer ${token}`;
 
     return config;
   },

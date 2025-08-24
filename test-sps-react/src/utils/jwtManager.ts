@@ -44,12 +44,10 @@ export class JwtManager {
     }
 
     public getTokenFromCookies(): string {
-
-        if(!Cookie.get(this.tokenName)){
-            throw new Error("No JWT token found");
-        }
-
         return Cookie.get(this.tokenName);
     }
 
+    public removeToken() { 
+        Cookie.remove(this.tokenName);
+    }
 }
