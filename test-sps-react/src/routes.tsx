@@ -4,6 +4,7 @@ import Users from "./pages/Users.tsx";
 import UserEdit, { userLoader } from "./pages/UserEdit.tsx";
 import SignIn from "./pages/SignIn.tsx";
 import SignUp from "./pages/SignUp.tsx";
+import { ProtectedRoute } from "./components/ProtectedRoute.tsx";
 
 const router = createBrowserRouter([
   {
@@ -11,20 +12,28 @@ const router = createBrowserRouter([
     element: <Home />,
   },
   {
-    path: "/SignIn",
+    path: "/signin",
     element: <SignIn />,
   },
   {
-    path: "/SignUp",
+    path: "/signup",
     element: <SignUp />,
   },
   {
     path: "/users",
-    element: <Users />,
+    element: (
+      <ProtectedRoute>
+        <Users />
+      </ProtectedRoute>
+    ),
   },
   {
     path: "/users/:userId",
-    element: <UserEdit />,
+    element: (
+      <ProtectedRoute>
+        <UserEdit />
+      </ProtectedRoute>
+    ),
     loader: userLoader,
   },
 ]);
