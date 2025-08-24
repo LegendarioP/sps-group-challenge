@@ -1,0 +1,80 @@
+import { BadRequestError, ConflictError, handleApiError, NetworkError } from "../lib/api-errors.ts"
+import { SignUpSchema } from "../types/forms.ts"
+import { yupResolver } from "@hookform/resolvers/yup"
+import { useForm } from "react-hook-form"
+import { useSignUpSchema } from "../lib/validations/schemas/signUp.schema.ts"
+import userService from "../services/UserService.ts"
+import { useAuth } from "../contexts/AuthContext.tsx"
+import { useNavigate } from "react-router-dom"
+
+export const useRegisterForm = () => {
+  const schema = useSignUpSchema;
+  const { login } = useAuth();
+  const navigate = useNavigate();
+
+
+  const form = useForm({
+    resolver: yupResolver(schema),
+    mode: "onChange",
+    defaultValues: {
+      email: '',
+      nome: '',
+      password: '',
+      confirmPassword: '',
+    }
+  })
+
+  const onSubmit = async (data: SignUpSchema) => {
+    const formData = {
+      email: data.email,
+      nome: data.nome,
+      password: data.password
+    }
+
+    try {
+      const response = await userService.create(formData);
+
+      if (!response) {
+        throw new Error("No response from server");
+      }
+      console.log(response);
+
+      login(response.token, response.user);
+
+
+      form.reset()
+
+      navigate("/users", { replace: true });
+
+    } catch (error) {
+      try {
+        handleApiError(error)
+      } catch (apiError) {
+        if (apiError instanceof ConflictError) {
+          form.setError('email', {
+            message: "Email já cadastrado"
+          })
+        } else if (apiError instanceof BadRequestError) {
+          form.setError('root', {
+            message: "Dados inválidos"
+          })
+        } else if (apiError instanceof NetworkError) {
+          form.setError('root', {
+            message: "Erro de conexão"
+          })
+        } else {
+          form.setError('root', {
+            message: "Erro interno do servidor"
+          })
+        }
+      }
+    }
+  }
+
+  return {
+    form,
+    onSubmit: form.handleSubmit(onSubmit),
+    loading: form.formState.isSubmitting,
+    errors: form.formState.errors
+  }
+}
