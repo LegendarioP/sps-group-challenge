@@ -1,4 +1,3 @@
-import { AxiosResponse } from "axios";
 import { apiPrivate, apiPublic } from "../lib/api.ts";
 import { User } from "../types/user.ts";
 
@@ -8,18 +7,29 @@ class UserService {
     private readonly publicAPI = apiPublic,
   ){}
 
-  async list(): Promise<AxiosResponse<any>> {
-    const users = await this.privateAPI.get(`/users`);
-    return users;
+  async list(): Promise<User[]> {
+    try {
+      const response = await this.privateAPI.get<User[]>(`/users`);
+      return response.data;
+    } catch (error) {
+      console.error("Error listing users:", error);
+      throw error;
+    }
   }
 
-  async get(id: string): Promise<any> {
-    throw new Error("Not implemented");
+  async get(id: string): Promise<User> {
+    try {
+      const response = await this.privateAPI.get<User>(`/users/${id}`);
+      return response.data;
+    } catch (error) {
+      console.error("Error getting user:", error);
+      throw error;
+    }
   }
 
   async create(data: User): Promise<any> {
     try {
-      const response = await this.publicAPI.post(`/users`, data);
+      const response = await this.publicAPI.post<User>(`/users`, data);
       return response.data;
     } catch (error) {
       console.error("Error creating user:", error);
@@ -27,12 +37,23 @@ class UserService {
     }
   }
 
-  async delete(id: string): Promise<any> {
-    throw new Error("Not implemented");
+  async update(id: string, data: Partial<User>): Promise<User> {
+    try {
+      const response = await this.privateAPI.put<User>(`/users/${id}`, data);
+      return response.data;
+    } catch (error) {
+      console.error("Error updating user:", error);
+      throw error;
+    }
   }
 
-  async update(id: string, data: any): Promise<any> {
-    throw new Error("Not implemented");
+  async delete(id: string): Promise<void> {
+    try {
+      await this.privateAPI.delete(`/users/${id}`);
+    } catch (error) {
+      console.error("Error deleting user:", error);
+      throw error;
+    }
   }
 }
 
