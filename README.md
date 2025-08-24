@@ -79,8 +79,9 @@ npm run dev
 🌐 Backend rodando em: http://localhost:3001
 
 ### **3. Setup Frontend:**
+Abra um novo terminal, então execute:
 ```bash
-cd ../test-sps-react
+cd test-sps-react
 npm install
 npm start
 ```
