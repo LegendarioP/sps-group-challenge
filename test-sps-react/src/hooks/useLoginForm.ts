@@ -1,4 +1,4 @@
-import { BadRequestError, ConflictError, handleApiError, NetworkError } from "../lib/api-errors.ts"
+import { BadRequestError, handleApiError, NetworkError } from "../lib/api-errors.ts"
 import { SignInSchema } from "../types/forms.ts"
 import { yupResolver } from "@hookform/resolvers/yup"
 import { useForm } from "react-hook-form"
